@@ -10,12 +10,11 @@ conn = MySQLdb.connect(
 
 cur = conn.cursor()
 
-aa = cur.execute("select * from test.test")
+sql = "insert into piaoniu_page (title,dt,address,url) values ('%s','%s','%s','%s')" % ('1','2','3','4')
 
-info = cur.fetchmany(aa)
+cur.execute(sql)
 
-for i in info:
-    print i
+conn.commit()
 
 cur.close()
 
