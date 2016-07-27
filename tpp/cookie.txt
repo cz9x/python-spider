@@ -1,0 +1,9 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.taobao.com	TRUE	/	FALSE		cookie2	1c6f9900597198e88aa3547e8b6ff1df
+.taobao.com	TRUE	/	FALSE	1477310449	t	48468a3b2855b661fb6197ca044e0f9f
+.taobao.com	TRUE	/	FALSE		v	0
+dianying.taobao.com	FALSE	/	FALSE	1472126449	tb_city	632500
+dianying.taobao.com	FALSE	/	FALSE	1472126449	tb_cityName	uqPEz9bd

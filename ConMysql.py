@@ -1,21 +1,22 @@
 import MySQLdb
 
-conn = MySQLdb.connect(
-    host='localhost',
-    port=3306,
-    user='root',
-    passwd='123456',
-    db='test',
-)
+conn = MySQLdb.connect(host='43.241.220.35', port=3306, user='root', passwd='zhaime2015', db='spider',
+                           use_unicode=True, charset="utf8")
 
 cur = conn.cursor()
 
-sql = "insert into piaoniu_page (title,dt,address,url) values ('%s','%s','%s','%s')" % ('1','2','3','4')
+sql = 'select city_code from tpp_city_list'
 
-cur.execute(sql)
+try:
+    cur.execute(sql)
 
-conn.commit()
+    result = cur.fetchall()
 
-cur.close()
+    for row in result:
+        name = row[0]
+        print name
+
+except:
+    print "Error"
 
 conn.close()

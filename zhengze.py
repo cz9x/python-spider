@@ -3,7 +3,8 @@
 import re
 import time
 
-page = '1天前'
+page = '12天前'
+
 
 def GetTime(TimeString):
     ticks = time.time()
@@ -11,7 +12,7 @@ def GetTime(TimeString):
 
     match = re.match(pattern, TimeString)
 
-    result = [match.group(),TimeString.replace(match.group(), '')]
+    result = [match.group(), TimeString.replace(match.group(), '')]
 
     if result[1] == '分钟前':
         Utime = ticks - 60 * int(result[0])
@@ -22,4 +23,10 @@ def GetTime(TimeString):
 
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(Utime))
 
-print GetTime(page)
+
+url = 'https://dianying.taobao.com/cinemaDetail.htm?cinemaId=31697&n_s=new'
+
+pattern = re.compile('\d+')
+search = re.search(pattern, url)
+
+print search.group()
