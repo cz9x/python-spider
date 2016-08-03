@@ -17,10 +17,10 @@ def mysqlInsert(sql):
         cur.execute(sql)
         conn.commit()
         cur.close()
-        conn.close()
 
     except MySQLdb.Error, e:
         print "Error %d: %s" % (e.args[0], e.args[1])
+    conn.close()
 
 
 def mysqlSelect(sql):
@@ -52,7 +52,7 @@ def getDistrictList(listUrl, cityid):
     result = opener.open(listUrl)
     cookie.save(ignore_discard=True, ignore_expires=True)
 
-    targetUrl = 'https://dianying.taobao.com/ajaxCinemaList.htm?page=1&regionName=&cinemaName=&pageSize=500&pageLength=15&sortType=0&n_s=new'
+    targetUrl = 'https://dianying.taobao.com/ajaxCinemaList.htm?page=1&regionName=&cinemaName=&pageSize=1000&pageLength=15&sortType=0&n_s=new'
     result = opener.open(targetUrl)
 
     soup = BeautifulSoup(result, "html.parser")
@@ -63,15 +63,21 @@ def getDistrictList(listUrl, cityid):
         print item.find('a').getText()
         print item.find('a').get('href')
         print item.find('span', class_='limit-address').getText()
-        print re.search(pattern, item.find('a').get('href')).group()
+        # print re.search(pattern, item.find('a').get('href')).group()
 
         cinemaName = item.find('a').getText()
         cinemaId = re.search(pattern, item.find('a').get('href')).group()
         cinemaAdress = item.find('span', class_='limit-address').getText()
+        gps = str(item.find('a', class_='J_miniMap').get('data-points')).split(',')
+        longitude = gps[0]
+        latitude = gps[1]
+        tele = item.find('div', class_='middle-p-list').find_next().find_next().find_next().find_next().getText()
         cityId = cityid
 
-        sql = "insert into tpp_cinema_list (city_id, cinema_id, cinema_name, cinema_address, created_at) " \
-              "values ('%s', '%s', '%s', '%s', now())" % (cityId, cinemaId, cinemaName, cinemaAdress)
+        sql = "insert into tpp_cinema_list (city_id, cinema_id, cinema_name, cinema_address" \
+              ", longitude, latitude, tele, created_at) " \
+              "values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', now())" \
+              % (cityId, cinemaId, cinemaName, cinemaAdress, longitude, latitude, tele)
         print sql
         mysqlInsert(sql)
 

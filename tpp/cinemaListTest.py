@@ -1,56 +1,37 @@
 # -*- coding:utf-8 -*-
-
+import cookielib
+import re
 import urllib2
 from bs4 import BeautifulSoup
 
-SHurl = 'https://dianying.taobao.com/cinemaList.htm?spm=a1z21.6646277.city.12.stBZn0&n_s=new&city=310100'
-BJurl = 'https://dianying.taobao.com/cinemaList.htm?spm=a1z21.6646277.city.12.stBZn0&n_s=new&city=110100'
-SZurl = 'https://dianying.taobao.com/cinemaList.htm?spm=a1z21.6646277.city.12.stBZn0&n_s=new&city=440300'
+def getDistrictList(listUrl):
+    filename = 'cookie.txt'
 
-SHrequest = urllib2.Request(SHurl)
-SHresponse = urllib2.urlopen(SHrequest)
+    cookie = cookielib.MozillaCookieJar(filename)
+    handler = urllib2.HTTPCookieProcessor(cookie)
+    opener = urllib2.build_opener(handler)
 
-SHsoup = BeautifulSoup(SHresponse.read(), "html.parser")
+    result = opener.open(listUrl)
+    cookie.save(ignore_discard=True, ignore_expires=True)
 
-# SHresult = SHsoup.find_all('div', class_='middle-hd')
-# print SHresult
-# for item in SHresult:
-#     print item.find('a').getText()
+    targetUrl = 'https://dianying.taobao.com/ajaxCinemaList.htm?page=1&regionName=&cinemaName=&pageSize=500&pageLength=15&sortType=0&n_s=new'
+    result = opener.open(targetUrl)
 
-SHnext = SHsoup.find('div', class_='sortbar-more J_cinemaMore').get('data-ajax')
-SHparam = SHsoup.find('div', class_='sortbar-more J_cinemaMore').get('data-param')
-SHnextUrl = SHnext + '?' + str(SHparam).replace('10', '100')
+    soup = BeautifulSoup(result, "html.parser")
+    items = soup.find_all('div', class_='detail-middle')
+    pattern = re.compile('\d+')
 
-SHnextSoup = BeautifulSoup(urllib2.urlopen(urllib2.Request(SHnextUrl)), "html.parser")
-print SHnextSoup
+    for item in items:
+        print item.find('a').getText()
+        print item.find('a').get('href')
+        print item.find('span', class_='limit-address').getText()
+        print re.search(pattern, item.find('a').get('href')).group()
+        print item.find('a', class_='J_miniMap').get('data-points')
+        print item.find('div', class_='middle-p-list').find_next().find_next().find_next().find_next().getText()
 
+        gps = str(item.find('a', class_='J_miniMap').get('data-points')).split(',')
+        print gps[0],gps[1]
 
+url = 'https://dianying.taobao.com/cinemaList.htm?spm=a1z21.6646277.city.12.stBZn0&n_s=new&city=310100'
 
-
-BJrequest = urllib2.Request(BJurl)
-BJresponse = urllib2.urlopen(BJrequest)
-
-BJsoup = BeautifulSoup(BJresponse.read(), "html.parser")
-#
-# BJresult = BJsoup.find_all('div', class_='middle-hd')
-# for item in BJresult:
-#     print item.find('a').getText()
-
-BJnext = SHsoup.find('div', class_='sortbar-more J_cinemaMore').get('data-ajax')
-BJparam = SHsoup.find('div', class_='sortbar-more J_cinemaMore').get('data-param')
-BJnextUrl = BJnext + '?' + str(BJparam).replace('10', '100')
-
-BJnextSoup = BeautifulSoup(urllib2.urlopen(urllib2.Request(BJnextUrl)), "html.parser")
-print BJnextSoup
-
-
-
-# SZrequest = urllib2.Request(SZurl)
-# SZresponse = urllib2.urlopen(SZrequest)
-#
-# SZsoup = BeautifulSoup(SZresponse.read(), "html.parser")
-#
-# SZresult = SZsoup.find_all('div', class_='middle-hd')
-#
-# for item in SZresult:
-#     print item.find('a').getText()
+getDistrictList(url)
